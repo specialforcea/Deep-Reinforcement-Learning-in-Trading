@@ -6,6 +6,7 @@ import numpy as np
 import time
 from keras.layers import Dense, Lambda, Layer, Input, Flatten
 from keras.models import Sequential, Model
+#from tensorflow.keras.models import Model
 from keras.optimizers import Adam
 from keras.models import load_model
 from keras.callbacks import ModelCheckpoint
@@ -64,16 +65,17 @@ class DDDQNAgent(Agent):
         """
         # pdb.set_trace()
         brain = Sequential()
-        neurons_per_layer = 24
+        neurons_per_layer = 45
         activation = "relu"
         brain.add(Dense(neurons_per_layer,
                         input_dim=self.state_size,
                         activation=activation))
-        brain.add(Dense(neurons_per_layer*2, activation=activation))
-        brain.add(Dense(neurons_per_layer*4, activation=activation))
+        brain.add(Dense(neurons_per_layer, activation=activation))
+        brain.add(Dense(neurons_per_layer, activation=activation))
+        brain.add(Dense(neurons_per_layer, activation=activation))
         brain.add(Dense(self.action_size, activation='linear'))
         layer = brain.layers[-2]  # Get the second last layer of the model
-        nb_action = brain.output._keras_shape[-1]  #  remove the last layer
+        nb_action = brain.output.shape[-1]  #  remove the last layer
         y = Dense(nb_action + 1, activation='linear')(layer.output)
         outputlayer = Lambda(lambda a: K.expand_dims(a[:, 0], -1) + a[:, 1:] - K.mean(a[:, 1:], keepdims=True),
                              output_shape=(nb_action,))(y)  #  Using the max dueling type

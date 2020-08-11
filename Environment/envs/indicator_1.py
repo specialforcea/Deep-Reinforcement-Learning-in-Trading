@@ -76,12 +76,12 @@ class Indicator_1(Env):
         self.n_actions = 3
         self._prices_history = []
         self._history_length = history_length
-        self._tick_buy = 0
-        self._tick_sell = 0
-        self.tick_mid = 0 # saeed
-        self.tick_cci_14 = 0
-        self.tick_rsi_14=0
-        self.tick_dx_14 = 0
+        # self._tick_buy = 0
+        # self._tick_sell = 0
+        # self.tick_mid = 0 # saeed
+        # self.tick_cci_14 = 0
+        # self.tick_rsi_14=0
+        # self.tick_dx_14 = 0
         self._price = 0
         self._round_digits = 4
         self._holding_position = []  # [('buy',price, profit_taken, stop_loss),...]
@@ -114,13 +114,17 @@ class Indicator_1(Env):
         self._closed_plot = False
         self._holding_position = []
         self._max_lost = -1000
-        for i in range(self._history_length):
+        self._prices_history = []
+        for i in range(self._history_length+1):
             self._prices_history.append(next(self._data_generator))
-        self._tick_buy, self._tick_sell,self.tick_mid ,self.tick_rsi_14,self.tick_cci_14= \
-            self._prices_history[0][:5]
+        self._prices_history = np.vstack(self._prices_history)
+        #print(self._prices_history)
+
+        # self._tick_buy, self._tick_sell,self.tick_mid ,self.tick_rsi_14,self.tick_cci_14= \
+        #     self._prices_history[0][:5]
         # self._tick_buy, self._tick_sell,self.tick_mid ,self.tick_rsi_14,self.tick_cci_14, self.tick_dx_14= \
         #     self._prices_history[0][:6]
-
+        self._close  = self._prices_history[-1, 0]
         observation = self._get_observation()
         self.state_shape = observation.shape
         self._action = self._actions['hold']
@@ -140,7 +144,7 @@ class Indicator_1(Env):
                 - info (dict): Contains auxiliary diagnostic information (helpful for debugging, and sometimes learning).
 
         """
-
+        #print('history:',len(self._prices_history), self._prices_history[-1,0])
         self._action = action
         self._iteration += 1
         done = False
@@ -156,10 +160,12 @@ class Indicator_1(Env):
             reward -= self._trading_fee
             if all(self._position == self._positions['flat']):
                 self._position = self._positions['long']
-                self._entry_price = self._price = self._tick_buy
+                # self._entry_price = self._price = self._tick_buy
+                self._entry_price = self._price = self._close
                 self.Buy_render = True
             elif all(self._position == self._positions['short']):
-                self._exit_price = self._exit_price = self._tick_sell
+                # self._exit_price = self._exit_price = self._tick_sell
+                self._exit_price = self._exit_price = self._close
                 instant_pnl = self._entry_price - self._exit_price
                 self._position = self._positions['flat']
                 self._entry_price = 0
@@ -172,11 +178,14 @@ class Indicator_1(Env):
         elif all(action == self._actions['sell']):
             reward -= self._trading_fee
             if all(self._position == self._positions['flat']):
-                self._position = self._positions['short']
-                self._entry_price = self._price = self._tick_sell
-                self.Sell_render = True
+                # self._position = self._positions['short']
+                # # self._entry_price = self._price = self._tick_sell
+                # self._entry_price = self._price = self._close
+                # self.Sell_render = True
+                pass
             elif all(self._position == self._positions['long']):
-                self._exit_price = self._tick_buy
+                # self._exit_price = self._tick_buy
+                self._exit_price = self._close
                 instant_pnl = self._exit_price - self._entry_price
                 self._position = self._positions['flat']
                 self._entry_price = 0
@@ -195,15 +204,17 @@ class Indicator_1(Env):
         self._total_reward += reward
 
         try:
-            self._prices_history.append(next(self._data_generator))
-            self._tick_sell, self._tick_buy, self.tick_mid, self.tick_rsi_14, self.tick_cci_14= \
-            self._prices_history[-1][:5]
+            self._prices_history = np.vstack((self._prices_history[1:, :],
+                                              next(self._data_generator)))
+            # self._tick_sell, self._tick_buy, self.tick_mid, self.tick_rsi_14, self.tick_cci_14= \
+            # self._prices_history[-1][:5]
+            self._close = self._prices_history[-1, 0]
         except StopIteration:
             done = True
             info['status'] = 'No more data.'
 
         # Game over logic
-        if self._iteration >= self._episode_length:
+        if self._iteration > self._episode_length:
             done = True
             info['status'] = 'Time out.'
         if reward <= self._max_lost:
@@ -222,14 +233,22 @@ class Indicator_1(Env):
 
     def return_calc(self,render_show=False):
         trade_details= {}
+        # if self.Sell_render:
+        #     trade_details = {'Trade':'SELL','Price':self._tick_sell,'Time':self._iteration}
+        # elif self.Buy_render:
+        #     trade_details = {'Trade': 'BUY', 'Price': self._tick_buy, 'Time': self._iteration}
+        # if self.TP_render:
+        #     trade_details = {'Trade': 'TP', 'Price': self._exit_price, 'Time': self._iteration}
+        # elif self.SL_render:
+        #     trade_details = {'Trade': 'SL', 'Price': self._exit_price, 'Time': self._iteration}
         if self.Sell_render:
-            trade_details = {'Trade':'SELL','Price':self._tick_sell,'Time':self._iteration}
+            trade_details = {'Trade':'SELL','Price':self._close,'Time':self._iteration}
         elif self.Buy_render:
-            trade_details = {'Trade': 'BUY', 'Price': self._tick_buy, 'Time': self._iteration}
+            trade_details = {'Trade': 'BUY', 'Price': self._close, 'Time': self._iteration}
         if self.TP_render:
-            trade_details = {'Trade': 'TP', 'Price': self._exit_price, 'Time': self._iteration}
+            trade_details = {'Trade': 'TP', 'Price': self._close, 'Time': self._iteration}
         elif self.SL_render:
-            trade_details = {'Trade': 'SL', 'Price': self._exit_price, 'Time': self._iteration}
+            trade_details = {'Trade': 'SL', 'Price': self._close, 'Time': self._iteration}
 
         if(not render_show):
             self.TP_render=self.SL_render=False
@@ -312,12 +331,14 @@ class Indicator_1(Env):
         if all(self._position==self._positions['flat']):
             self.unrl_pnl=0
         elif all(self._position==self._positions['long']):
-            self.unrl_pnl = (self._prices_history[-1][2]-self._price)/self._prices_history[-1][2]
+            # self.unrl_pnl = (self._prices_history[-1][2]-self._price)/self._prices_history[-1][2]
+            self.unrl_pnl = (self._prices_history[-1][0] - self._price) / self._prices_history[-1][0]
         elif all(self._position==self._positions['short']):
-            self.unrl_pnl = (self._price - self._prices_history[-1][2])/self._prices_history[-1][2]
+            # self.unrl_pnl = (self._price - self._prices_history[-1][2])/self._prices_history[-1][2]
+            self.unrl_pnl = (self._price - self._prices_history[-1][0]) / self._prices_history[-1][0]
 
         return np.concatenate(
-            [self._prices_history[-1][3:]] +
+            [self._prices_history[-self._history_length-1:-1, 1:].reshape(-1,)] +
             [
                 np.array([self.unrl_pnl]),
                 np.array(self._position)

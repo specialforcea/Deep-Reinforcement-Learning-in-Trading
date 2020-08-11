@@ -24,7 +24,8 @@ def World(filename=None,
         learning_rate = 0.001,
         render_show=False,
         display=False,
-        save_results=False
+        save_results=False,
+        history_length=5
 ):
     start = time.time()
 
@@ -34,7 +35,8 @@ def World(filename=None,
     environment = Indicator_1(data_generator=generator,
                               trading_fee=trading_fee,
                               time_fee=time_fee,
-                              episode_length=episode_length)
+                              episode_length=episode_length,
+                              history_length=history_length)
     action_size = len(Indicator_1._actions)
 
     state = environment.reset()
@@ -118,12 +120,16 @@ def World(filename=None,
 
     if(train_test=='test'):
         agent.load_model()
-
+    train_test_split = 0.
+    print('test')
     generator = TAStreamer(filename=filename, mode='test', split=train_test_split)
+    episode_length = round(int(len(pd.read_csv(filename)) * (1 - train_test_split)), -1)
+
     environment = Indicator_1(data_generator=generator,
                               trading_fee=trading_fee,
                               time_fee=time_fee,
-                              episode_length=episode_length,)
+                              episode_length=episode_length,
+                              history_length=history_length)
 
     done = False
     state = environment.reset()
@@ -148,11 +154,10 @@ def World(filename=None,
             if(render_show):
                 environment.render()
 
-
         q_values_list.append(q_values)
         state_list.append(state)
         action_list.append(action)
-
+        #print('action:', len(action_list))
     print('Reward = %.2f' % sum(reward_list))
 
     trades_df=pd.DataFrame(trade_list)
