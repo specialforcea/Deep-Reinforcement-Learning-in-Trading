@@ -53,10 +53,11 @@ print(df.head())
 df['Date'] = pd.to_datetime(df['Date'])
 df = df.set_index('Date')
 df['Close'] = df['Close']/df['Close'].iloc[0]*100
-df[['port','Close']].plot()
+df = df.rename(columns={'Close':'SPY','port':'trained_portfolio'})
+df[['SPY','trained_portfolio']].plot()
 df.to_csv('C:/Users/yuchen.yue/Documents/veta_/veta/Deep-Reinforcement-Learning-in-Trading/test.csv')
 plt.show()
-df['port_return'] = df['port'].pct_change().dropna()
+df['port_return'] = df['trained_portfolio'].pct_change().dropna()
 df_analyis = df[['return', 'port_return']]
 stat = pf.compute_stats(df_analyis, benchmark_rets=df_analyis['return'])
 print(stat)

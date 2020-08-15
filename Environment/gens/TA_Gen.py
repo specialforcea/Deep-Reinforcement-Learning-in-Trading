@@ -52,7 +52,7 @@ class TAStreamer(DataGenerator):
         #     raw_data = df_normalized[['ask','bid','mid','rsi_14','cci_14','dx_14','volume']].iloc[:split_len,:]
         # else:
         #     raw_data = df_normalized[['ask', 'bid', 'mid', 'rsi_14', 'cci_14','dx_14','volume']].iloc[split_len:,:]
-        df_data = df_normalized[['close','return','score', 'VIX','Volume',
+        df_data = df_normalized[['close','return','score', #'VIX','Volume',
                                  '5D_mom','10D_mom',
                                  '20D_mom','30D_mom','60D_mom']]
         if mode=='train':
