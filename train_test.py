@@ -16,13 +16,13 @@ from Analytics.Training_Analytics import loss_vis, reward_vis
 import gc
 import re
 
-train_test_split = 0.6
+train_test_split = 0.3
 results_dict = {}
 stock_file = 'C:/Users/yuchen.yue/Documents/veta_/veta/Deep-Reinforcement-Learning-in-Trading/Data/SPY_RL_.csv'
 
 start = time.time()
 results = World(filename=stock_file, train_test_split=train_test_split,
-                episodes=60, display=True, history_length=5)
+                episodes=60, display=True, history_length=1)
 end = time.time()
 print('Time Taken = ', end - start)
 df = pd.read_csv(stock_file)
@@ -39,3 +39,4 @@ results_dict['SPY'] = results
 gc.collect()
 
 pickle.dump(results_dict, open("results_revised.p", "wb"))
+

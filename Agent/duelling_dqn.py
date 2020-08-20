@@ -73,6 +73,7 @@ class DDDQNAgent(Agent):
         brain.add(Dense(neurons_per_layer, activation=activation))
         brain.add(Dense(neurons_per_layer, activation=activation))
         brain.add(Dense(neurons_per_layer, activation=activation))
+        #brain.add(Dense(neurons_per_layer, activation=activation))
         brain.add(Dense(self.action_size, activation='linear'))
         layer = brain.layers[-2]  # Get the second last layer of the model
         nb_action = brain.output.shape[-1]  #  remove the last layer

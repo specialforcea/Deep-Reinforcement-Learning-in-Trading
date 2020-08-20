@@ -35,14 +35,14 @@ class TAStreamer(DataGenerator):
 
         # df['return'] = df['Close'].pct_change()
         # df = df.dropna()
-        df_pre = df[['return', 'score', 'VIX', 'Volume','5D_mom','10D_mom',
-                     '20D_mom','30D_mom','60D_mom']]
+
+        df_pre = df.loc[:,~df.columns.isin(['Close','Date'])]
+
         min_max_scaler = preprocessing.MinMaxScaler((-1, 1))
         np_scaled = min_max_scaler.fit_transform(df_pre)
         df_normalized = pd.DataFrame(np_scaled)
         df_normalized.index = df['Date']
-        df_normalized.columns = ['return', 'score', 'VIX', 'Volume','5D_mom','10D_mom',
-                                 '20D_mom','30D_mom','60D_mom']
+        df_normalized.columns = df_pre.columns
         df_normalized['close'] = df['Close'].values
         split_len = int(split*len(df_normalized))
         # df_normalized.to_csv('C:/Users/yuchen.yue/Documents/veta_/veta/Deep-Reinforcement-Learning-in-Trading/Data/normalized.csv')
@@ -52,9 +52,7 @@ class TAStreamer(DataGenerator):
         #     raw_data = df_normalized[['ask','bid','mid','rsi_14','cci_14','dx_14','volume']].iloc[:split_len,:]
         # else:
         #     raw_data = df_normalized[['ask', 'bid', 'mid', 'rsi_14', 'cci_14','dx_14','volume']].iloc[split_len:,:]
-        df_data = df_normalized[['close','return','score', #'VIX','Volume',
-                                 '5D_mom','10D_mom',
-                                 '20D_mom','30D_mom','60D_mom']]
+        df_data = df_normalized[['close'] + list(df_pre.columns)]
         if mode=='train':
             raw_data = df_data.iloc[:split_len, :]
         else:

@@ -1,25 +1,25 @@
 ,return,port_return
-Annual return,9.1%,11.19%
-Cumulative returns,183.71%,256.25%
-Annualized_1year_return,13.3%,35.1%
-Annualized_5year_return,9.86%,15.16%
-Annualized_10year_return,13.31%,16.15%
-Annual volatility,21.07%,20.74%
-Annuallized_1year_volatility,31.66%,30.39%
-Annuallized_5year_volatility,18.7%,17.95%
-Annuallized_10year_volatility,17.12%,16.63%
-Sharpe ratio,0.519,0.616
-1 year sharpe ratio,0.554,1.143
-5 year sharpe ratio,0.597,0.877
-10 year sharpe ratio,0.816,0.984
-Calmar ratio,0.179,0.221
-Stability,0.961,0.97
-Max drawdown,-50.7%,-50.7%
-Omega ratio,1.113,1.141
-Sortino ratio,0.728,0.871
-Skew,-0.016,nan
-Kurtosis,15.829,nan
-Tail ratio,0.893,0.914
-Daily value at risk,-2.61%,-2.56%
-Alpha,0.0,0.024
-Beta,1.0,0.969
+Annual return,10.65%,11.67%
+Cumulative returns,132.43%,151.03%
+Annualized_1year_return,11.0%,20.29%
+Annualized_5year_return,7.67%,8.72%
+Annualized_10year_return,nan%,nan%
+Annual volatility,16.37%,15.48%
+Annuallized_1year_volatility,31.76%,30.71%
+Annuallized_5year_volatility,18.79%,17.85%
+Annuallized_10year_volatility,nan%,nan%
+Sharpe ratio,0.7,0.791
+1 year sharpe ratio,0.488,0.756
+5 year sharpe ratio,0.488,0.558
+10 year sharpe ratio,nan,nan
+Calmar ratio,0.312,0.406
+Stability,0.941,0.946
+Max drawdown,-34.1%,-28.74%
+Omega ratio,1.152,1.192
+Sortino ratio,0.973,1.116
+Skew,-0.638,nan
+Kurtosis,19.558,nan
+Tail ratio,0.933,0.973
+Daily value at risk,-2.02%,-1.9%
+Alpha,0.0,0.021
+Beta,1.0,0.894

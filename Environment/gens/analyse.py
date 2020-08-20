@@ -52,6 +52,8 @@ df['state'] = states
 print(df.head())
 df['Date'] = pd.to_datetime(df['Date'])
 df = df.set_index('Date')
+df = df.iloc[int(0.3*len(df)):,:]
+df['port'] = df['port']/df['port'].iloc[0]*100
 df['Close'] = df['Close']/df['Close'].iloc[0]*100
 df = df.rename(columns={'Close':'SPY','port':'trained_portfolio'})
 df[['SPY','trained_portfolio']].plot()
